@@ -45,6 +45,7 @@ void main() {
         ),
         '2001:db8::1',
       );
+      expect(bytesToIp(Uint8List(16)), '::');
       expect(
         bytesToIp(
           Uint8List.fromList([
