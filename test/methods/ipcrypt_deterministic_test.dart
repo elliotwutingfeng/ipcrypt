@@ -1,11 +1,16 @@
 import 'dart:typed_data';
 
 import 'package:ipcrypt/ipcrypt.dart';
+import 'package:ipcrypt/src/methods/ipcrypt_deterministic.dart';
 import 'package:test/test.dart';
 import 'test_vectors.dart';
 
 void main() {
   group('IpCryptDeterministic', () {
+    test('IpCryptDeterministic() | returnsNormally', () {
+      expect(IpCryptDeterministic.new, returnsNormally);
+    });
+
     for (final TestVector testVector in TestVectors.deterministic) {
       test('encrypt | ${testVector.ip} -> ${testVector.output}', () {
         expect(

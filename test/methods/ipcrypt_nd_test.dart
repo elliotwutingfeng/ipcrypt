@@ -7,6 +7,10 @@ import 'test_vectors.dart';
 
 void main() {
   group('IpCryptNonDeterministic', () {
+    test('IpCryptNonDeterministic() | returnsNormally', () {
+      expect(IpCryptNonDeterministic.new, returnsNormally);
+    });
+
     for (final TestVector testVector in TestVectors.nd) {
       test('encrypt | ${testVector.ip} -> ${testVector.output}', () {
         testVector.tweak.isEmpty
