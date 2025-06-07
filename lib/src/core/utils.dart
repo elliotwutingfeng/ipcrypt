@@ -6,7 +6,7 @@ import 'dart:typed_data';
 Uint8List ipToBytes(final String ip) {
   // Try parsing as IPv4.
   try {
-    final Uint8List maybeIPv4 = Uint8List.fromList(Uri.parseIPv4Address(ip));
+    final List<int> maybeIPv4 = Uri.parseIPv4Address(ip);
     return (BytesBuilder(copy: false)
           ..add(Uint8List(10))
           ..addByte(0xff)
