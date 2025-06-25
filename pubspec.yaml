@@ -3,21 +3,21 @@ description: A Dart library for IP address encryption and obfuscation.
 version: 0.0.1
 repository: https://github.com/elliotwutingfeng/ipcrypt
 funding:
-  - https://www.buymeacoffee.com/elliotwutingfeng
+    - https://www.buymeacoffee.com/elliotwutingfeng
 topics:
-  - crypto
-  - cryptography
-  - encryption
-  - privacy
-  - security
+    - crypto
+    - cryptography
+    - encryption
+    - privacy
+    - security
 
 environment:
-  sdk: ^3.8.0
+    sdk: ^3.8.0
 
 dependencies:
-  pointycastle: ^4.0.0
+    pointycastle: ^4.0.0
 
 dev_dependencies:
-  coverage: ^1.14.0
-  lints: ^6.0.0
-  test: ^1.26.2
+    coverage: ^1.14.1
+    lints: ^6.0.0
+    test: ^1.26.2

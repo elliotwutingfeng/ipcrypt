@@ -86,15 +86,6 @@ String bytesToIp(final Uint8List bytes) {
     final Iterable<String> before = parts.take(zeroRun.start);
     final Iterable<String> after = parts.skip(zeroRun.start + zeroRun.length);
 
-    if (before.isEmpty && after.isEmpty) {
-      return '::';
-    }
-    if (before.isEmpty) {
-      return '::${after.join(':')}';
-    }
-    if (after.isEmpty) {
-      return '${before.join(':')}::';
-    }
     return '${before.join(':')}::${after.join(':')}';
   }
 
