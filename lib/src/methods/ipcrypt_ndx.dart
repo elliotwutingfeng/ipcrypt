@@ -9,7 +9,7 @@ class IpCryptExtendedNonDeterministic {
   static const int keySize = 32;
   static const int tweakSize = 16;
 
-  /// Encrypt an IP address using AES-XTS mode.
+  /// Encrypts an IP address using AES-XTS mode.
   /// This function provides non-deterministic encryption with
   /// strong security guarantees.
   /// If no tweak is provided, a random one is generated, making the
@@ -35,7 +35,7 @@ class IpCryptExtendedNonDeterministic {
         .toBytes();
   }
 
-  /// Decrypt an IP address using AES-XTS mode.
+  /// Decrypts an IP address using AES-XTS mode.
   /// The input must include both the tweak and
   /// ciphertext used during encryption.
   /// The first 16 bytes are the tweak,

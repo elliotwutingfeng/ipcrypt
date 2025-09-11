@@ -2,7 +2,12 @@ import 'dart:typed_data';
 
 import 'package:ipcrypt/ipcrypt.dart';
 
-enum Method { deterministic, nonDeterministic, extendedNonDeterministic }
+enum Method {
+  deterministic,
+  nonDeterministic,
+  extendedNonDeterministic,
+  prefixPreserving,
+}
 
 void main() {
   final List<({Uint8List key, Uint8List tweak, Method method})> credentials = [
@@ -22,6 +27,13 @@ void main() {
       ),
       tweak: hexStringToBytes('21bd1834bc088cd2b4ecbe30b70898d7'),
       method: Method.extendedNonDeterministic,
+    ),
+    (
+      key: hexStringToBytes(
+        '2b7e151628aed2a6abf7158809cf4f3ca9f5ba40db214c3798f2e1c23456789a',
+      ),
+      tweak: hexStringToBytes(''),
+      method: Method.prefixPreserving,
     ),
   ];
 
@@ -51,9 +63,13 @@ void main() {
           c.key,
         );
       }
+      if (c.method == Method.prefixPreserving) {
+        encryptedIp = ipCryptPrefixPreserving.encrypt(ip, c.key);
+        decryptedIp = ipCryptPrefixPreserving.decrypt(encryptedIp, c.key);
+      }
       print('IP: $ip | IPCrypt Method: ${c.method.name}');
       print('  Key (as hex string): ${bytesToHexString(c.key)}');
-      if (c.method != Method.deterministic) {
+      if (![Method.deterministic, Method.prefixPreserving].contains(c.method)) {
         print('Tweak (as hex string): ${bytesToHexString(c.tweak)}');
       }
       print('         Encrypted IP: $encryptedIp');

@@ -1,6 +1,6 @@
 /// A Dart library for IP address encryption and obfuscation.
 ///
-/// IPCrypt provides three different methods for IP address encryption:
+/// IPCrypt provides four different methods for IP address encryption:
 ///
 /// **Deterministic Encryption**: Uses AES-128 in a deterministic mode, where
 /// the same input always produces the same output for a given key. This is
@@ -13,6 +13,11 @@
 /// **Extended Non-Deterministic Encryption**: An enhanced version of
 /// non-deterministic encryption that uses a larger key and tweak size
 /// for increased security.
+///
+/// **Prefix-Preserving Encryption**: Uses a dual AES-128 construction to
+/// encrypt IP addresses while preserving their prefix structure. This is
+/// useful for maintaining network topology information while protecting
+/// individual addresses.
 library;
 
 export 'src/core/utils.dart';
