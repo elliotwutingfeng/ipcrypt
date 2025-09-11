@@ -43,7 +43,16 @@ void main() {
         throwsFormatException,
       );
       expect(
-        () => ipCryptPrefixPreserving.encrypt('1.1.1.1', Uint8List(42)),
+        () => ipCryptPrefixPreserving.encrypt('1.1.1.1', Uint8List(32)),
+        throwsArgumentError,
+      );
+      expect(
+        () => ipCryptPrefixPreserving.encrypt(
+          '1.1.1.1',
+          Uint8List.fromList(
+            List.generate(42, (final int i) => i, growable: false),
+          ),
+        ),
         throwsArgumentError,
       );
     });
@@ -58,7 +67,16 @@ void main() {
         throwsFormatException,
       );
       expect(
-        () => ipCryptPrefixPreserving.decrypt('1.1.1.1', Uint8List(42)),
+        () => ipCryptPrefixPreserving.decrypt('1.1.1.1', Uint8List(32)),
+        throwsArgumentError,
+      );
+      expect(
+        () => ipCryptPrefixPreserving.decrypt(
+          '1.1.1.1',
+          Uint8List.fromList(
+            List.generate(42, (final int i) => i, growable: false),
+          ),
+        ),
         throwsArgumentError,
       );
     });
