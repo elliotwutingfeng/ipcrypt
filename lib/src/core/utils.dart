@@ -87,10 +87,15 @@ String bytesToIp(final Uint8List bytes) {
 
 /// Generate cryptographically secure random bytes.
 Uint8List randomBytes(final int length) {
+  if (length <= 0) {
+    throw RangeError('Number of bytes to generate must be positive.');
+  }
+  final Uint8List bytes = Uint8List(length);
   final Random random = Random.secure();
-  return Uint8List.fromList(
-    List.generate(length, (_) => random.nextInt(256), growable: false),
-  );
+  for (int i = 0; i < length; i++) {
+    bytes[i] = random.nextInt(256);
+  }
+  return bytes;
 }
 
 /// XOR two byte arrays of equal length.
@@ -98,9 +103,11 @@ Uint8List xorBytes(final Uint8List a, final Uint8List b) {
   if (a.length != b.length) {
     throw ArgumentError('Both byte arrays must have the same length.');
   }
-  return Uint8List.fromList(
-    List.generate(a.length, (final int i) => a[i] ^ b[i], growable: false),
-  );
+  final Uint8List bytes = Uint8List(a.length);
+  for (int i = 0; i < a.length; i++) {
+    bytes[i] = a[i] ^ b[i];
+  }
+  return bytes;
 }
 
 /// Convert hex string to bytes in big-endian order.
@@ -108,10 +115,23 @@ Uint8List hexStringToBytes(final String hexString) {
   if (hexString.length.isOdd) {
     throw ArgumentError('Length of hex string must be even.');
   }
-  return Uint8List.fromList([
-    for (int i = 0; i < hexString.length; i += 2)
-      int.parse(hexString.substring(i, i + 2), radix: 16),
-  ]);
+  final Uint8List result = Uint8List(hexString.length ~/ 2);
+  for (int i = 0; i < hexString.length; i += 2) {
+    for (int j = i; j < i + 2; j++) {
+      final int code = hexString.codeUnitAt(j);
+      if (!(code >= 48 && code <= 57) && // '0'-'9'
+          !(code >= 65 && code <= 70) && // 'A'-'F'
+          !(code >= 97 && code <= 102)) //  'a'-'f'
+      {
+        throw ArgumentError(
+          "Only characters ('0'-'9'), ('A'-'F'), and ('a'-'f')"
+          ' are allowed in hex string.',
+        );
+      }
+    }
+    result[i ~/ 2] = int.parse(hexString.substring(i, i + 2), radix: 16);
+  }
+  return result;
 }
 
 /// Convert bytes in big-endian order to hex string.
