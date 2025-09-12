@@ -119,7 +119,7 @@ void main() {
     });
     test('Invalid input | Non-hex characters', () {
       expect(() => hexStringToBytes('06p740ba'), throwsArgumentError);
-    }); 
+    });
   });
   group('bytesToHexString', () {
     test('Valid input', () {
