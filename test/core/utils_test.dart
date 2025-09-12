@@ -114,9 +114,12 @@ void main() {
         Uint8List.fromList([6, 23, 64, 183]),
       );
     });
-    test('Invalid input', () {
+    test('Invalid input | Odd character count', () {
       expect(() => hexStringToBytes('061740b'), throwsArgumentError);
     });
+    test('Invalid input | Non-hex characters', () {
+      expect(() => hexStringToBytes('06p740ba'), throwsArgumentError);
+    }); 
   });
   group('bytesToHexString', () {
     test('Valid input', () {
