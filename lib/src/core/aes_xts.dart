@@ -1,11 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:ipcrypt/src/core/aes_ecb.dart';
 import 'package:ipcrypt/src/core/utils.dart';
 import 'package:ipcrypt/src/methods/ipcrypt_ndx.dart';
-
-import 'package:pointycastle/api.dart';
-import 'package:pointycastle/block/aes.dart';
-import 'package:pointycastle/block/modes/ecb.dart';
 
 /// Encrypt a single block using AES-XTS
 /// mode (XEX Tweakable Block Cipher with Ciphertext Stealing).
@@ -33,13 +30,9 @@ Uint8List encryptBlockXts(
   final Uint8List k2 = key.sublist(
     IpCryptExtendedNonDeterministic.keySize ~/ 2,
   );
-  final Uint8List firstEncrypt = (ECBBlockCipher(
-    AESEngine(),
-  )..init(true, KeyParameter(k2))).process(tweak);
+  final Uint8List firstEncrypt = encryptBlockEcb(k2, tweak);
   final Uint8List firstXor = xorBytes(plaintext, firstEncrypt);
-  final Uint8List secondEncrypt = (ECBBlockCipher(
-    AESEngine(),
-  )..init(true, KeyParameter(k1))).process(firstXor);
+  final Uint8List secondEncrypt = encryptBlockEcb(k1, firstXor);
   return xorBytes(secondEncrypt, firstEncrypt);
 }
 
@@ -64,12 +57,8 @@ Uint8List decryptBlockXts(
   final Uint8List k2 = key.sublist(
     IpCryptExtendedNonDeterministic.keySize ~/ 2,
   );
-  final Uint8List firstEncrypt = (ECBBlockCipher(
-    AESEngine(),
-  )..init(true, KeyParameter(k2))).process(tweak);
+  final Uint8List firstEncrypt = encryptBlockEcb(k2, tweak);
   final Uint8List firstXor = xorBytes(ciphertext, firstEncrypt);
-  final Uint8List firstDecrypt = (ECBBlockCipher(
-    AESEngine(),
-  )..init(false, KeyParameter(k1))).process(firstXor);
+  final Uint8List firstDecrypt = decryptBlockEcb(k1, firstXor);
   return xorBytes(firstDecrypt, firstEncrypt);
 }

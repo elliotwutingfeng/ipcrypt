@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:ipcrypt/src/core/aes_ecb.dart';
+import 'package:ipcrypt/src/core/pfx.dart';
 
 class IpCryptPrefixPreserving {
   const IpCryptPrefixPreserving();
