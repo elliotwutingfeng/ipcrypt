@@ -23,9 +23,8 @@ Uint8List decryptBlockEcb(final Uint8List key, final Uint8List ciphertext) {
 }
 
 /// Encrypts or Decrypts an IP address using ipcrypt-pfx mode.
-/// The key must be exactly [IpCryptPrefixPreserving.keySize] bytes long
-/// (split into two AES-128 keys).
-String aesEcbPfx(final String ip, final Uint8List key, final bool encrypt) {
+/// The key must be exactly 32 bytes long (split into two AES-128 keys).
+String pfx(final String ip, final Uint8List key, final bool encrypt) {
   if (key.length != IpCryptPrefixPreserving.keySize) {
     throw ArgumentError(
       'Key must be ${IpCryptPrefixPreserving.keySize} bytes.',
