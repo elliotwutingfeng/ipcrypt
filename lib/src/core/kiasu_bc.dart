@@ -9,105 +9,6 @@ const int expandedKeySize =
 const int gfModulus = 0x1b; // Irreducible polynomial: x^8 + x^4 + x^3 + x + 1.
 const int gfHighBit = 0x80; // Used for carry detection in GF multiplication.
 
-/// MixColumns transformation matrix.
-abstract class MixCols {
-  abstract final int m00;
-  abstract final int m01;
-  abstract final int m02;
-  abstract final int m03;
-  abstract final int m10;
-  abstract final int m11;
-  abstract final int m12;
-  abstract final int m13;
-  abstract final int m20;
-  abstract final int m21;
-  abstract final int m22;
-  abstract final int m23;
-  abstract final int m30;
-  abstract final int m31;
-  abstract final int m32;
-  abstract final int m33;
-}
-
-/// Forward MixColumns matrix coefficients.
-class MixColsForward implements MixCols {
-  const MixColsForward();
-
-  @override
-  final int m00 = 0x02;
-  @override
-  final int m01 = 0x03;
-  @override
-  final int m02 = 0x01;
-  @override
-  final int m03 = 0x01;
-  @override
-  final int m10 = 0x01;
-  @override
-  final int m11 = 0x02;
-  @override
-  final int m12 = 0x03;
-  @override
-  final int m13 = 0x01;
-  @override
-  final int m20 = 0x01;
-  @override
-  final int m21 = 0x01;
-  @override
-  final int m22 = 0x02;
-  @override
-  final int m23 = 0x03;
-  @override
-  final int m30 = 0x03;
-  @override
-  final int m31 = 0x01;
-  @override
-  final int m32 = 0x01;
-  @override
-  final int m33 = 0x02;
-}
-
-/// Inverse MixColumns matrix coefficients.
-class MixColsInverse implements MixCols {
-  const MixColsInverse();
-
-  @override
-  final int m00 = 0x0e;
-  @override
-  final int m01 = 0x0b;
-  @override
-  final int m02 = 0x0d;
-  @override
-  final int m03 = 0x09;
-  @override
-  final int m10 = 0x09;
-  @override
-  final int m11 = 0x0e;
-  @override
-  final int m12 = 0x0b;
-  @override
-  final int m13 = 0x0d;
-  @override
-  final int m20 = 0x0d;
-  @override
-  final int m21 = 0x09;
-  @override
-  final int m22 = 0x0e;
-  @override
-  final int m23 = 0x0b;
-  @override
-  final int m30 = 0x0b;
-  @override
-  final int m31 = 0x0d;
-  @override
-  final int m32 = 0x09;
-  @override
-  final int m33 = 0x0e;
-}
-
-final MixCols mixColsForward = MixColsForward();
-final MixCols mixColsInverse = MixColsInverse();
-
 /// AES S-box.
 final List<int> sbox = [
   0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b,
@@ -253,20 +154,45 @@ void shiftRows(final Uint8List state, [final bool inverse = false]) {
   state.setAll(0, temp);
 }
 
-/// Performs Galois Field multiplication in GF(2^8).
-/// Uses the irreducible polynomial x^8 + x^4 + x^3 + x + 1.
-int gmul(final int a, final int b) {
-  int p = 0;
+/// Specialized multiplication functions for GF(2^8) with AES field polynomial.
+/// These are optimized for the specific constant values used in MixColumns.
+
+int gmul2(final int a) {
   int a_ = a;
-  int b_ = b;
-  for (int i = 0; i < 8; i++) {
-    if ((b_ & 1) != 0) p ^= a_;
-    final bool highBitSet = (a_ & gfHighBit) != 0;
-    a_ = (a_ << 1) & 0xff;
-    if (highBitSet) a_ ^= gfModulus;
-    b_ >>= 1;
-  }
-  return p;
+  final bool highBit = (a_ & gfHighBit) != 0;
+  a_ = (a_ << 1) & 0xff;
+  if (highBit) a_ ^= gfModulus;
+  return a_;
+}
+
+int gmul3(final int a) => gmul2(a) ^ a;
+
+int gmul9(final int a) {
+  final int a2 = gmul2(a);
+  final int a4 = gmul2(a2);
+  final int a8 = gmul2(a4);
+  return a8 ^ a;
+}
+
+int gmul11(final int a) {
+  final int a2 = gmul2(a);
+  final int a4 = gmul2(a2);
+  final int a8 = gmul2(a4);
+  return a8 ^ a2 ^ a;
+}
+
+int gmul13(final int a) {
+  final int a2 = gmul2(a);
+  final int a4 = gmul2(a2);
+  final int a8 = gmul2(a4);
+  return a8 ^ a4 ^ a;
+}
+
+int gmul14(final int a) {
+  final int a2 = gmul2(a);
+  final int a4 = gmul2(a2);
+  final int a8 = gmul2(a4);
+  return a8 ^ a4 ^ a2;
 }
 
 /// Performs the MixColumns operation on the state array.
@@ -274,35 +200,36 @@ int gmul(final int a, final int b) {
 /// by a fixed polynomial a(x) = {03}x^3 + {01}x^2 + {01}x + {02}.
 void mixColumns(final Uint8List state, [final bool inverse = false]) {
   final Uint8List temp = Uint8List(stateSize);
-  final MixCols coef = inverse ? mixColsInverse : mixColsForward;
 
-  for (int i = 0; i < 4; i++) {
-    final int col = i * 4;
-    temp[col] =
-        gmul(coef.m00, state[col]) ^
-        gmul(coef.m01, state[col + 1]) ^
-        gmul(coef.m02, state[col + 2]) ^
-        gmul(coef.m03, state[col + 3]);
+  if (inverse) {
+    // Inverse MixColumns with coefficients [0x0e, 0x0b, 0x0d, 0x09]
+    for (int i = 0; i < 4; i++) {
+      final int col = i * 4;
+      final int s0 = state[col];
+      final int s1 = state[col + 1];
+      final int s2 = state[col + 2];
+      final int s3 = state[col + 3];
 
-    temp[col + 1] =
-        gmul(coef.m10, state[col]) ^
-        gmul(coef.m11, state[col + 1]) ^
-        gmul(coef.m12, state[col + 2]) ^
-        gmul(coef.m13, state[col + 3]);
+      temp[col] = gmul14(s0) ^ gmul11(s1) ^ gmul13(s2) ^ gmul9(s3);
+      temp[col + 1] = gmul9(s0) ^ gmul14(s1) ^ gmul11(s2) ^ gmul13(s3);
+      temp[col + 2] = gmul13(s0) ^ gmul9(s1) ^ gmul14(s2) ^ gmul11(s3);
+      temp[col + 3] = gmul11(s0) ^ gmul13(s1) ^ gmul9(s2) ^ gmul14(s3);
+    }
+  } else {
+    // Forward MixColumns with coefficients [0x02, 0x03, 0x01, 0x01]
+    for (int i = 0; i < 4; i++) {
+      final int col = i * 4;
+      final int s0 = state[col];
+      final int s1 = state[col + 1];
+      final int s2 = state[col + 2];
+      final int s3 = state[col + 3];
 
-    temp[col + 2] =
-        gmul(coef.m20, state[col]) ^
-        gmul(coef.m21, state[col + 1]) ^
-        gmul(coef.m22, state[col + 2]) ^
-        gmul(coef.m23, state[col + 3]);
-
-    temp[col + 3] =
-        gmul(coef.m30, state[col]) ^
-        gmul(coef.m31, state[col + 1]) ^
-        gmul(coef.m32, state[col + 2]) ^
-        gmul(coef.m33, state[col + 3]);
+      temp[col] = gmul2(s0) ^ gmul3(s1) ^ s2 ^ s3;
+      temp[col + 1] = s0 ^ gmul2(s1) ^ gmul3(s2) ^ s3;
+      temp[col + 2] = s0 ^ s1 ^ gmul2(s2) ^ gmul3(s3);
+      temp[col + 3] = gmul3(s0) ^ s1 ^ s2 ^ gmul2(s3);
+    }
   }
-
   state.setAll(0, temp);
 }
 
