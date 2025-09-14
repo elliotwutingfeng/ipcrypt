@@ -140,13 +140,17 @@ String bytesToHexString(final Uint8List bytes) => bytes
 
 /// Check if the IP address is IPv4 based on its byte length.
 /// IPv4 addresses are 4 bytes, IPv6 addresses are 16 bytes.
-bool isIPv4(final Uint8List bytes16) =>
-    bytes16[10] == 0xff &&
-    bytes16[11] == 0xff &&
-    Iterable.generate(
-      10,
-      (final int i) => bytes16[i],
-    ).every((final int b) => b == 0);
+bool isIPv4(final Uint8List bytes16) {
+  if (bytes16[10] != 0xff || bytes16[11] != 0xff) {
+    return false;
+  }
+  for (int i = 0; i < 10; i++) {
+    if (bytes16[i] != 0) {
+      return false;
+    }
+  }
+  return true;
+}
 
 /// Pad prefix for prefix_len_bits=96 (IPv4).
 /// Result: 00000001 00...00 0000ffff (separator at pos 96, then 96 bits).
@@ -207,9 +211,14 @@ Uint8List shiftLeftOneBit(final Uint8List data) {
 
 /// Check if 2 unsigned byte lists are equal
 /// by comparing them element-by-element.
-bool equalBytes(final Uint8List a, final Uint8List b) =>
-    a.length == b.length &&
-    Iterable.generate(
-      a.length,
-      (final int i) => a[i] == b[i],
-    ).every((final bool isEqual) => isEqual);
+bool equalBytes(final Uint8List a, final Uint8List b) {
+  if (a.length != b.length) {
+    return false;
+  }
+  for (int i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) {
+      return false;
+    }
+  }
+  return true;
+}
