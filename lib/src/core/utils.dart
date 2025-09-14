@@ -7,12 +7,11 @@ Uint8List ipToBytes(final String ip) {
   // Try parsing as IPv4.
   try {
     final List<int> maybeIPv4 = Uri.parseIPv4Address(ip);
-    return (BytesBuilder(copy: false)
-          ..add(Uint8List(10))
-          ..addByte(0xff)
-          ..addByte(0xff)
-          ..add(maybeIPv4))
-        .toBytes();
+    final Uint8List result = Uint8List(16);
+    result[10] = 0xff;
+    result[11] = 0xff;
+    result.setAll(12, maybeIPv4);
+    return result;
   } on FormatException {
     //
   }
@@ -151,22 +150,21 @@ bool isIPv4(final Uint8List bytes16) =>
 
 /// Pad prefix for prefix_len_bits=96 (IPv4).
 /// Result: 00000001 00...00 0000ffff (separator at pos 96, then 96 bits).
-Uint8List padPrefix96() =>
-    (BytesBuilder(copy: false)
-          ..add(Uint8List(3))
-          ..addByte(0x01) // Set bit at position 96 (bit 0 of byte 3)
-          ..add(Uint8List(10))
-          ..addByte(0xff)
-          ..addByte(0xff))
-        .toBytes();
+Uint8List padPrefix96() {
+  final Uint8List padded = Uint8List(16);
+  padded[3] = 0x01; // Set bit at position 96 (bit 0 of byte 3)
+  padded[14] = 0xFF;
+  padded[15] = 0xFF;
+  return padded;
+}
 
 /// Pad prefix for prefix_len_bits=0 (IPv6).
 /// Sets separator bit at position 0 (LSB of byte 15).
-Uint8List padPrefix0() =>
-    (BytesBuilder(copy: false)
-          ..add(Uint8List(15)) // Set bit at position 0 (LSB of byte 15)
-          ..addByte(0x01))
-        .toBytes();
+Uint8List padPrefix0() {
+  final Uint8List padded = Uint8List(16);
+  padded[15] = 0x01; // Set bit at position 0 (LSB of byte 15)
+  return padded;
+}
 
 /// Extract bit at position from N-byte array.
 /// Position: 0 = LSB of last byte, n = (N * 8) - 1 = MSB of first byte.
