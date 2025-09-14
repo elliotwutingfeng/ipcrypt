@@ -18,7 +18,7 @@ Uint8List ipToBytes(final String ip) {
   }
   // Try parsing as IPv6.
   try {
-    return Uint8List.fromList(Uri.parseIPv6Address(ip));
+    return (BytesBuilder(copy: false)..add(Uri.parseIPv6Address(ip))).toBytes();
   } on FormatException {
     //
   }
@@ -151,21 +151,22 @@ bool isIPv4(final Uint8List bytes16) =>
 
 /// Pad prefix for prefix_len_bits=96 (IPv4).
 /// Result: 00000001 00...00 0000ffff (separator at pos 96, then 96 bits).
-Uint8List padPrefix96() {
-  final Uint8List padded = Uint8List(16);
-  padded[3] = 0x01; // Set bit at position 96 (bit 0 of byte 3)
-  padded[14] = 0xFF;
-  padded[15] = 0xFF;
-  return padded;
-}
+Uint8List padPrefix96() =>
+    (BytesBuilder(copy: false)
+          ..add(Uint8List(3))
+          ..addByte(0x01) // Set bit at position 96 (bit 0 of byte 3)
+          ..add(Uint8List(10))
+          ..addByte(0xff)
+          ..addByte(0xff))
+        .toBytes();
 
 /// Pad prefix for prefix_len_bits=0 (IPv6).
 /// Sets separator bit at position 0 (LSB of byte 15).
-Uint8List padPrefix0() {
-  final Uint8List padded = Uint8List(16);
-  padded[15] = 0x01; // Set bit at position 0 (LSB of byte 15)
-  return padded;
-}
+Uint8List padPrefix0() =>
+    (BytesBuilder(copy: false)
+          ..add(Uint8List(15)) // Set bit at position 0 (LSB of byte 15)
+          ..addByte(0x01))
+        .toBytes();
 
 /// Extract bit at position from N-byte array.
 /// Position: 0 = LSB of last byte, n = (N * 8) - 1 = MSB of first byte.
@@ -198,7 +199,7 @@ Uint8List shiftLeftOneBit(final Uint8List data) {
   // Process from least significant byte (byte N) to most significant (byte 0)
   for (int i = data.length - 1; i >= 0; i--) {
     // Current byte shifted left by 1, with carry from previous byte
-    result[i] = ((data[i] << 1) | carry) & 0xFF;
+    result[i] = ((data[i] << 1) | carry) & 0xff;
     // Extract the bit that will be carried to the next byte
     carry = (data[i] >> 7) & 1;
   }
@@ -206,7 +207,8 @@ Uint8List shiftLeftOneBit(final Uint8List data) {
   return result;
 }
 
-/// Check if 2 Uint8Lists are equal by comparing them element-by-element.
+/// Check if 2 unsigned byte lists are equal
+/// by comparing them element-by-element.
 bool equalBytes(final Uint8List a, final Uint8List b) =>
     a.length == b.length &&
     Iterable.generate(
