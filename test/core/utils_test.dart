@@ -130,4 +130,17 @@ void main() {
       );
     });
   });
+  group('equalBytes', () {
+    test('Valid input', () {
+      expect(equalBytes(Uint8List.fromList([]), Uint8List.fromList([])), true);
+      expect(
+        equalBytes(Uint8List.fromList([1]), Uint8List.fromList([2])),
+        false,
+      );
+      expect(
+        equalBytes(Uint8List.fromList([]), Uint8List.fromList([1])),
+        false,
+      );
+    });
+  });
 }
