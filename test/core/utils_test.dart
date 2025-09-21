@@ -39,6 +39,15 @@ void main() {
       expect(
         bytesToIp(
           Uint8List.fromList([
+            0, 0, 0, 42, 0, 0, 0, 0, 0, 0, 0xFF, 0xFF, 0, 0, 0, 0,
+            //
+          ]),
+        ),
+        '0:2a::ffff:0:0',
+      );
+      expect(
+        bytesToIp(
+          Uint8List.fromList([
             0x20, 1, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
             //
           ]),
@@ -84,10 +93,7 @@ void main() {
   });
   group('xorBytes', () {
     test('Valid input', () {
-      expect(
-        xorBytes(Uint8List.fromList([]), Uint8List.fromList([])),
-        Uint8List.fromList([]),
-      );
+      expect(xorBytes(Uint8List(0), Uint8List(0)), Uint8List(0));
       expect(
         xorBytes(
           Uint8List.fromList([6, 23, 64, 183]),
@@ -108,7 +114,7 @@ void main() {
   });
   group('hexStringToBytes', () {
     test('Valid input', () {
-      expect(hexStringToBytes(''), Uint8List.fromList([]));
+      expect(hexStringToBytes(''), Uint8List(0));
       expect(
         hexStringToBytes('061740b7'),
         Uint8List.fromList([6, 23, 64, 183]),
@@ -123,7 +129,7 @@ void main() {
   });
   group('bytesToHexString', () {
     test('Valid input', () {
-      expect(bytesToHexString(Uint8List.fromList([])), '');
+      expect(bytesToHexString(Uint8List(0)), '');
       expect(
         bytesToHexString(Uint8List.fromList([6, 23, 64, 183])),
         '061740b7',
@@ -132,15 +138,12 @@ void main() {
   });
   group('equalBytes', () {
     test('Valid input', () {
-      expect(equalBytes(Uint8List.fromList([]), Uint8List.fromList([])), true);
+      expect(equalBytes(Uint8List(0), Uint8List(0)), true);
       expect(
         equalBytes(Uint8List.fromList([1]), Uint8List.fromList([2])),
         false,
       );
-      expect(
-        equalBytes(Uint8List.fromList([]), Uint8List.fromList([1])),
-        false,
-      );
+      expect(equalBytes(Uint8List(0), Uint8List.fromList([1])), false);
     });
   });
 }
