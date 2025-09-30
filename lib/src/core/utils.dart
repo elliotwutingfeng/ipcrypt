@@ -1,5 +1,9 @@
-import 'dart:math';
 import 'dart:typed_data';
+
+import 'package:ipcrypt/src/core/random_fill_sync_stub.dart'
+    if (dart.library.io) 'package:ipcrypt/src/core/random_fill_sync_vm.dart'
+    if (dart.library.js_interop) 'package:ipcrypt/src/core/random_fill_sync_js.dart'
+    as rf;
 
 /// Convert an IP address string to its 16-byte representation.
 /// Handles both IPv4 and IPv6 addresses, with IPv4 being mapped to IPv6.
@@ -90,10 +94,7 @@ Uint8List randomBytes(final int length) {
     throw RangeError('Number of bytes to generate must be positive.');
   }
   final Uint8List bytes = Uint8List(length);
-  final Random random = Random.secure();
-  for (int i = 0; i < length; i++) {
-    bytes[i] = random.nextInt(256);
-  }
+  rf.randomFillSync(bytes);
   return bytes;
 }
 

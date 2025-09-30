@@ -1,3 +1,7 @@
+# v0.1.2
+
+- Add support for Node.js.
+
 # v0.1.1
 
 - Add support for Prefix-Preserving Encryption (ipcrypt-pfx).

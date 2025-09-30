@@ -1,6 +1,6 @@
 name: ipcrypt
 description: A Dart library for IP address encryption and obfuscation.
-version: 0.1.1
+version: 0.1.2
 repository: https://github.com/elliotwutingfeng/ipcrypt
 funding:
     - https://www.buymeacoffee.com/elliotwutingfeng
