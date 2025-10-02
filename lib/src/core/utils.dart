@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:ipcrypt/src/core/random_fill_sync_stub.dart'
     if (dart.library.io) 'package:ipcrypt/src/core/random_fill_sync_vm.dart'
-    if (dart.library.js) 'package:ipcrypt/src/core/random_fill_sync_js.dart'
+    if (dart.library.js_interop) 'package:ipcrypt/src/core/random_fill_sync_js.dart'
     as rf;
 
 /// Convert an IP address string to its 16-byte representation.

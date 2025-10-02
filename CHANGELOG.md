@@ -1,6 +1,6 @@
 # v0.1.2
 
-- Add support for Node.js.
+- Add support for Node.js and WASM.
 
 # v0.1.1
 
