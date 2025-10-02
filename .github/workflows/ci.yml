@@ -3,59 +3,65 @@ name: CI
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-    test:
-        strategy:
-            fail-fast: false
-            matrix:
-                os: [macos-latest, windows-latest, ubuntu-latest]
-                sdk: ["3.9"]
-        runs-on: ${{ matrix.os }}
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+          os: [macos-latest, windows-latest, ubuntu-latest]
+          sdk: ['3.9']
+    runs-on: ${{ matrix.os }}
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
 
-            - name: Set up Dart SDK
-              uses: dart-lang/setup-dart@v1
-              with:
-                  sdk: ${{ matrix.sdk }}
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+            node-version: "latest"
+            check-latest: true
 
-            - name: Install lcov (macOS)
-              if: matrix.os == 'macos-latest'
-              run: brew install lcov
+      - name: Set up Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
 
-            - name: Install lcov (Windows)
-              if: matrix.os == 'windows-latest'
-              run: |
-                  choco install lcov
-                  echo "C:\ProgramData\chocolatey\lib\lcov\tools\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Install lcov (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install lcov
 
-            - name: Install lcov (Ubuntu)
-              if: matrix.os == 'ubuntu-latest'
-              run: sudo apt-get update && sudo apt-get install -y lcov
+      - name: Install lcov (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install lcov
+          echo "C:\ProgramData\chocolatey\lib\lcov\tools\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-            - name: Test without coverage report
-              if: matrix.os != 'ubuntu-latest'
-              run: make tests
+      - name: Install lcov (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y lcov
 
-            - name: Test and generate coverage report
-              if: matrix.os == 'ubuntu-latest'
-              run: make tests_with_coverage_report
+      - name: Test without coverage report
+        if: matrix.os != 'ubuntu-latest'
+        run: make tests
 
-            - name: Upload coverage to Coveralls
-              if: matrix.os == 'ubuntu-latest'
-              uses: coverallsapp/github-action@v2
+      - name: Test and generate coverage report
+        if: matrix.os == 'ubuntu-latest'
+        run: make tests_with_coverage_report
 
-    format-markdown:
-        runs-on: ubuntu-latest
+      - name: Upload coverage to Coveralls
+        if: matrix.os == 'ubuntu-latest' && matrix.sdk == '3.9'
+        uses: coverallsapp/github-action@v2
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v5
+  format-markdown:
+    runs-on: ubuntu-latest
 
-            - name: Format Markdown with markdownlint
-              run: |
-                  npm install -g markdownlint-cli
-                  markdownlint --disable MD013 MD033 --fix . --ignore CODE_OF_CONDUCT.md --ignore CHANGELOG.md
-                  git add -A
-                  git diff --cached --exit-code
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Format Markdown with markdownlint
+        run: |
+          npm install -g markdownlint-cli
+          markdownlint --disable MD013 MD033 --fix . --ignore CODE_OF_CONDUCT.md --ignore CHANGELOG.md
+          git add -A
+          git diff --cached --exit-code
