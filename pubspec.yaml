@@ -12,7 +12,7 @@ topics:
     - security
 
 environment:
-    sdk: ^3.10.0
+    sdk: ^3.11.0
 
 dependencies:
     pointycastle: ^4.0.0
