@@ -8,7 +8,7 @@ A Dart implementation of the IP address encryption and obfuscation methods speci
 
 ## Requirements
 
-- **Dart SDK:** 3.9+
+- **Dart SDK:** 3.10+
 
 ## Overview
 
