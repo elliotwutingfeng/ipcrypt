@@ -4,7 +4,7 @@ import 'package:ipcrypt/src/core/aes_ecb.dart';
 import 'package:ipcrypt/src/core/utils.dart';
 
 class IpCryptDeterministic {
-  const IpCryptDeterministic();
+  const new();
 
   static const int keySize = 16;
 
@@ -21,7 +21,7 @@ class IpCryptDeterministic {
   /// Security note: Because this mode is deterministic, it may leak information
   /// about IP address patterns.
   /// Use non-deterministic modes for higher security.
-  String encrypt(final String ip, final Uint8List key) {
+  String encrypt(String ip, Uint8List key) {
     if (key.length != keySize) {
       throw ArgumentError('Key must be $keySize bytes.');
     }
@@ -37,7 +37,7 @@ class IpCryptDeterministic {
   /// 1. Convert encrypted IP address to a 16-byte block
   /// 2. Apply standard AES-128 decryption
   /// 3. Convert result back to IP address format
-  String decrypt(final String encryptedData, final Uint8List key) {
+  String decrypt(String encryptedData, Uint8List key) {
     if (key.length != keySize) {
       throw ArgumentError('Key must be $keySize bytes.');
     }

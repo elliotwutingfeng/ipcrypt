@@ -2,7 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 /// Generate [size] cryptographically secure random bytes.
-Uint8List randomBytes(final int size) {
+Uint8List randomBytes(int size) {
   final Random random = Random.secure();
   final Uint8List bytes = Uint8List(size);
   for (int i = 0; i < bytes.length; i++) {

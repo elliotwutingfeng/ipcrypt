@@ -1,5 +1,5 @@
 final class TestVector {
-  const TestVector({
+  const new({
     required this.key,
     required this.ip,
     required this.tweak,

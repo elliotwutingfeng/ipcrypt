@@ -7,7 +7,7 @@ import 'package:ipcrypt/src/core/random_bytes_stub.dart'
 
 /// Convert an IP address string to its 16-byte representation.
 /// Handles both IPv4 and IPv6 addresses, with IPv4 being mapped to IPv6.
-Uint8List ipToBytes(final String ip) {
+Uint8List ipToBytes(String ip) {
   // Try parsing as IPv4.
   try {
     final List<int> maybeIPv4 = Uri.parseIPv4Address(ip);
@@ -30,7 +30,7 @@ Uint8List ipToBytes(final String ip) {
 
 /// Convert a 16-byte representation back to an IP address string.
 /// Automatically detects and handles both IPv4-mapped and IPv6 addresses.
-String bytesToIp(final Uint8List bytes) {
+String bytesToIp(Uint8List bytes) {
   if (bytes.length != 16) {
     throw ArgumentError('Input must be 16 bytes.');
   }
@@ -43,12 +43,12 @@ String bytesToIp(final Uint8List bytes) {
   // Handle IPv6.
   final List<String> parts = List.generate(
     8,
-    (final int i) => ((bytes[i * 2] << 8) | bytes[i * 2 + 1]).toRadixString(16),
+    (int i) => ((bytes[i * 2] << 8) | bytes[i * 2 + 1]).toRadixString(16),
     growable: false,
   );
 
   // Find best zero compression opportunity.
-  ({int start, int length}) findLongestZeroRun(final List<String> parts) {
+  ({int start, int length}) findLongestZeroRun(List<String> parts) {
     int longestStart = -1, longestLength = 0;
     int currentStart = -1, currentLength = 0;
 
@@ -89,7 +89,7 @@ String bytesToIp(final Uint8List bytes) {
 }
 
 /// Generate cryptographically secure random bytes.
-Uint8List randomBytes(final int length) {
+Uint8List randomBytes(int length) {
   if (length <= 0) {
     throw RangeError('Number of bytes to generate must be positive.');
   }
@@ -97,7 +97,7 @@ Uint8List randomBytes(final int length) {
 }
 
 /// XOR two byte arrays of equal length.
-Uint8List xorBytes(final Uint8List a, final Uint8List b) {
+Uint8List xorBytes(Uint8List a, Uint8List b) {
   if (a.length != b.length) {
     throw ArgumentError('Both byte arrays must have the same length.');
   }
@@ -109,7 +109,7 @@ Uint8List xorBytes(final Uint8List a, final Uint8List b) {
 }
 
 /// Convert hex string to bytes in big-endian order.
-Uint8List hexStringToBytes(final String hexString) {
+Uint8List hexStringToBytes(String hexString) {
   if (hexString.length.isOdd) {
     throw ArgumentError('Length of hex string must be even.');
   }
@@ -133,13 +133,12 @@ Uint8List hexStringToBytes(final String hexString) {
 }
 
 /// Convert bytes in big-endian order to hex string.
-String bytesToHexString(final Uint8List bytes) => bytes
-    .map((final int byte) => byte.toRadixString(16).padLeft(2, '0'))
-    .join();
+String bytesToHexString(Uint8List bytes) =>
+    bytes.map((int byte) => byte.toRadixString(16).padLeft(2, '0')).join();
 
 /// Check if the IP address is IPv4 based on its byte length.
 /// IPv4 addresses are 4 bytes, IPv6 addresses are 16 bytes.
-bool isIPv4(final Uint8List bytes16) {
+bool isIPv4(Uint8List bytes16) {
   if (bytes16[10] != 0xff || bytes16[11] != 0xff) {
     return false;
   }
@@ -171,7 +170,7 @@ Uint8List padPrefix0() {
 
 /// Extract bit at position from N-byte array.
 /// Position: 0 = LSB of last byte, n = (N * 8) - 1 = MSB of first byte.
-int getBit(final Uint8List data, final int position) {
+int getBit(Uint8List data, int position) {
   final int byteIndex = data.length - 1 - position ~/ 8;
   final int bitIndex = position % 8;
   return (data[byteIndex] >> bitIndex) & 1;
@@ -179,7 +178,7 @@ int getBit(final Uint8List data, final int position) {
 
 /// Set bit at position in N-byte array.
 /// Position: 0 = LSB of last byte, n = (N * 8) - 1 = MSB of first byte.
-void setBit(final Uint8List data, final int position, final int value) {
+void setBit(Uint8List data, int position, int value) {
   final int byteIndex = data.length - 1 - position ~/ 8;
   final int bitIndex = position % 8;
 
@@ -193,7 +192,7 @@ void setBit(final Uint8List data, final int position, final int value) {
 /// Shift a N-byte array one bit to the left.
 /// The most significant bit is lost, and a zero bit is shifted in
 /// from the right.
-Uint8List shiftLeftOneBit(final Uint8List data) {
+Uint8List shiftLeftOneBit(Uint8List data) {
   final Uint8List result = Uint8List(data.length);
   int carry = 0;
 
@@ -210,7 +209,7 @@ Uint8List shiftLeftOneBit(final Uint8List data) {
 
 /// Check if 2 unsigned byte lists are equal
 /// by comparing them element-by-element.
-bool equalBytes(final Uint8List a, final Uint8List b) {
+bool equalBytes(Uint8List a, Uint8List b) {
   if (a.length != b.length) {
     return false;
   }

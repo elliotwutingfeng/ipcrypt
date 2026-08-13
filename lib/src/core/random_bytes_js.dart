@@ -7,11 +7,11 @@ const bool isDart2JS = bool.fromEnvironment('dart.tool.dart2js');
 
 @JS()
 @staticInterop
-class Process {}
+class Process;
 
 @JS()
 @staticInterop
-class Versions {}
+class Versions;
 
 @JS('process')
 external Process? get _process;
@@ -27,13 +27,13 @@ extension on Versions {
 bool get isNodeDart2JS => _process?.versions?.node != null && isDart2JS;
 
 @JS()
-external NodeCrypto require(final String id);
+external NodeCrypto require(String id);
 
 extension type NodeCrypto._(JSObject _) implements JSObject {
-  external JSUint8Array randomBytes(final int size);
+  external JSUint8Array randomBytes(int size);
 }
 
 /// Generate [size] cryptographically secure random bytes.
-Uint8List randomBytes(final int size) => isNodeDart2JS
+Uint8List randomBytes(int size) => isNodeDart2JS
     ? require('crypto').randomBytes(size).toDart
     : vm.randomBytes(size);

@@ -7,7 +7,7 @@ import 'package:ipcrypt/src/methods/ipcrypt_pfx.dart';
 /// Encrypts or Decrypts an IP address using ipcrypt-pfx mode.
 /// The key must be exactly 32 bytes long (split into two AES-128 keys).
 /// The first half of the 32-byte key cannot be the same as the second half.
-String pfx(final String ip, final Uint8List key, final bool encrypt) {
+String pfx(String ip, Uint8List key, bool encrypt) {
   if (key.length != IpCryptPrefixPreserving.keySize) {
     throw ArgumentError(
       'Key must be ${IpCryptPrefixPreserving.keySize} bytes.',

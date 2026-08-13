@@ -18,11 +18,7 @@ import 'package:ipcrypt/src/methods/ipcrypt_ndx.dart';
 /// 3. XOR plaintext with encrypted tweak.
 /// 4. Encrypt the result with AES using K1.
 /// 5. XOR the result with encrypted tweak again.
-Uint8List encryptBlockXts(
-  final Uint8List key,
-  final Uint8List tweak,
-  final Uint8List plaintext,
-) {
+Uint8List encryptBlockXts(Uint8List key, Uint8List tweak, Uint8List plaintext) {
   final Uint8List k1 = key.sublist(
     0,
     IpCryptExtendedNonDeterministic.keySize ~/ 2,
@@ -46,9 +42,9 @@ Uint8List encryptBlockXts(
 /// 4. Decrypt the result with AES using K1.
 /// 5. XOR the result with encrypted tweak again.
 Uint8List decryptBlockXts(
-  final Uint8List key,
-  final Uint8List tweak,
-  final Uint8List ciphertext,
+  Uint8List key,
+  Uint8List tweak,
+  Uint8List ciphertext,
 ) {
   final Uint8List k1 = key.sublist(
     0,

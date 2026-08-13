@@ -4,7 +4,7 @@ import 'package:ipcrypt/src/core/aes_xts.dart';
 import 'package:ipcrypt/src/core/utils.dart';
 
 class IpCryptExtendedNonDeterministic {
-  const IpCryptExtendedNonDeterministic();
+  const new();
 
   static const int keySize = 32;
   static const int tweakSize = 16;
@@ -15,11 +15,7 @@ class IpCryptExtendedNonDeterministic {
   /// If no tweak is provided, a random one is generated, making the
   /// encryption non-deterministic.
   /// The tweak is included in the output to allow for decryption.
-  Uint8List encrypt(
-    final String ip,
-    final Uint8List key, [
-    final Uint8List? tweak,
-  ]) {
+  Uint8List encrypt(String ip, Uint8List key, [Uint8List? tweak]) {
     if (key.length != keySize) {
       throw ArgumentError('Key must be $keySize bytes.');
     }
@@ -40,7 +36,7 @@ class IpCryptExtendedNonDeterministic {
   /// ciphertext used during encryption.
   /// The first 16 bytes are the tweak,
   /// and the last 16 bytes are the ciphertext.
-  String decrypt(final Uint8List encryptedData, final Uint8List key) {
+  String decrypt(Uint8List encryptedData, Uint8List key) {
     if (encryptedData.length != tweakSize + keySize ~/ 2) {
       throw ArgumentError(
         'Encrypted data must be ${tweakSize + keySize ~/ 2} bytes.',

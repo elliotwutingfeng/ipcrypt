@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:ipcrypt/ipcrypt.dart';
 import 'package:ipcrypt/src/methods/ipcrypt_pfx.dart';
 import 'package:test/test.dart';
+
 import 'test_vectors.dart';
 
 void main() {
@@ -36,9 +37,7 @@ void main() {
       expect(
         () => ipCryptPrefixPreserving.encrypt(
           'invalid',
-          Uint8List.fromList(
-            List.generate(32, (final int i) => i, growable: false),
-          ),
+          Uint8List.fromList(List.generate(32, (int i) => i, growable: false)),
         ),
         throwsFormatException,
       );
@@ -49,9 +48,7 @@ void main() {
       expect(
         () => ipCryptPrefixPreserving.encrypt(
           '1.1.1.1',
-          Uint8List.fromList(
-            List.generate(42, (final int i) => i, growable: false),
-          ),
+          Uint8List.fromList(List.generate(42, (int i) => i, growable: false)),
         ),
         throwsArgumentError,
       );
@@ -60,9 +57,7 @@ void main() {
       expect(
         () => ipCryptPrefixPreserving.decrypt(
           'invalid',
-          Uint8List.fromList(
-            List.generate(32, (final int i) => i, growable: false),
-          ),
+          Uint8List.fromList(List.generate(32, (int i) => i, growable: false)),
         ),
         throwsFormatException,
       );
@@ -73,9 +68,7 @@ void main() {
       expect(
         () => ipCryptPrefixPreserving.decrypt(
           '1.1.1.1',
-          Uint8List.fromList(
-            List.generate(42, (final int i) => i, growable: false),
-          ),
+          Uint8List.fromList(List.generate(42, (int i) => i, growable: false)),
         ),
         throwsArgumentError,
       );

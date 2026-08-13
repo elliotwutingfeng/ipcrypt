@@ -111,7 +111,7 @@ const List<int> rcon = [
 
 /// Performs the SubBytes operation on the state array.
 /// Applies the S-box substitution to each byte in the state.
-void subBytes(final Uint8List state, [final bool inverse = false]) {
+void subBytes(Uint8List state, [bool inverse = false]) {
   final List<int> sbox_ = inverse ? invSbox : sbox;
   for (int i = 0; i < stateSize; i++) {
     state[i] = sbox_[state[i]];
@@ -120,7 +120,7 @@ void subBytes(final Uint8List state, [final bool inverse = false]) {
 
 /// Performs the ShiftRows operation on the state array.
 /// Each row is cyclically shifted by a different offset.
-void shiftRows(final Uint8List state, [final bool inverse = false]) {
+void shiftRows(Uint8List state, [bool inverse = false]) {
   final Uint8List temp = Uint8List(stateSize);
   final List<int> shifts = inverse ? [0, 3, 2, 1] : [0, 1, 2, 3];
 
@@ -157,7 +157,7 @@ void shiftRows(final Uint8List state, [final bool inverse = false]) {
 /// Specialized multiplication functions for GF(2^8) with AES field polynomial.
 /// These are optimized for the specific constant values used in MixColumns.
 
-int gmul2(final int a) {
+int gmul2(int a) {
   int a_ = a;
   final bool highBit = (a_ & gfHighBit) != 0;
   a_ = (a_ << 1) & 0xff;
@@ -165,30 +165,30 @@ int gmul2(final int a) {
   return a_;
 }
 
-int gmul3(final int a) => gmul2(a) ^ a;
+int gmul3(int a) => gmul2(a) ^ a;
 
-int gmul9(final int a) {
+int gmul9(int a) {
   final int a2 = gmul2(a);
   final int a4 = gmul2(a2);
   final int a8 = gmul2(a4);
   return a8 ^ a;
 }
 
-int gmul11(final int a) {
+int gmul11(int a) {
   final int a2 = gmul2(a);
   final int a4 = gmul2(a2);
   final int a8 = gmul2(a4);
   return a8 ^ a2 ^ a;
 }
 
-int gmul13(final int a) {
+int gmul13(int a) {
   final int a2 = gmul2(a);
   final int a4 = gmul2(a2);
   final int a8 = gmul2(a4);
   return a8 ^ a4 ^ a;
 }
 
-int gmul14(final int a) {
+int gmul14(int a) {
   final int a2 = gmul2(a);
   final int a4 = gmul2(a2);
   final int a8 = gmul2(a4);
@@ -198,7 +198,7 @@ int gmul14(final int a) {
 /// Performs the MixColumns operation on the state array.
 /// Each column is treated as a polynomial over GF(2^8) and multiplied
 /// by a fixed polynomial a(x) = {03}x^3 + {01}x^2 + {01}x + {02}.
-void mixColumns(final Uint8List state, [final bool inverse = false]) {
+void mixColumns(Uint8List state, [bool inverse = false]) {
   final Uint8List temp = Uint8List(stateSize);
 
   if (inverse) {
@@ -235,7 +235,7 @@ void mixColumns(final Uint8List state, [final bool inverse = false]) {
 
 /// Expands a 16-byte key into round keys for AES encryption/decryption.
 /// Implements the AES key schedule algorithm.
-Uint8List expandKey(final Uint8List key) {
+Uint8List expandKey(Uint8List key) {
   final Uint8List expandedKey = Uint8List(expandedKeySize)..setAll(0, key);
 
   int rconIndex = 0;
@@ -275,7 +275,7 @@ Uint8List expandKey(final Uint8List key) {
 /// Example:
 /// Input tweak:  [t0,t1,t2,t3,t4,t5,t6,t7]
 /// Padded tweak: [t0,t1,0,0,t2,t3,0,0,t4,t5,0,0,t6,t7,0,0]
-Uint8List padTweak(final Uint8List tweak) {
+Uint8List padTweak(Uint8List tweak) {
   final Uint8List padded = Uint8List(16);
   for (int i = 0; i < 8; i += 2) {
     padded[i * 2] = tweak[i];
@@ -285,11 +285,7 @@ Uint8List padTweak(final Uint8List tweak) {
 }
 
 /// Encrypts a 16-byte block using KIASU-BC with the given key and tweak.
-Uint8List encryptBlockKiasuBc(
-  final Uint8List key,
-  final Uint8List tweak,
-  final Uint8List block,
-) {
+Uint8List encryptBlockKiasuBc(Uint8List key, Uint8List tweak, Uint8List block) {
   // Pad tweak and expand key.
   final Uint8List paddedTweak = padTweak(tweak);
   final Uint8List expandedKey = expandKey(key);
@@ -321,11 +317,7 @@ Uint8List encryptBlockKiasuBc(
 }
 
 /// Decrypts a 16-byte block using KIASU-BC with the given key and tweak.
-Uint8List decryptBlockKiasuBc(
-  final Uint8List key,
-  final Uint8List tweak,
-  final Uint8List block,
-) {
+Uint8List decryptBlockKiasuBc(Uint8List key, Uint8List tweak, Uint8List block) {
   // Pad tweak and expand key.
   final Uint8List paddedTweak = padTweak(tweak);
   final Uint8List expandedKey = expandKey(key);
