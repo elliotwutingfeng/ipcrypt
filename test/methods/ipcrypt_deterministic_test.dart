@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cipherlib/codecs.dart';
 import 'package:ipcrypt/ipcrypt.dart';
 import 'package:ipcrypt/src/methods/ipcrypt_deterministic.dart';
 import 'package:test/test.dart';
@@ -15,10 +16,7 @@ void main() {
     for (final TestVector testVector in TestVectors.deterministic) {
       test('encrypt | ${testVector.ip} -> ${testVector.output}', () {
         expect(
-          ipCryptDeterministic.encrypt(
-            testVector.ip,
-            hexStringToBytes(testVector.key),
-          ),
+          ipCryptDeterministic.encrypt(testVector.ip, fromHex(testVector.key)),
           testVector.output,
         );
       });
@@ -26,7 +24,7 @@ void main() {
         expect(
           ipCryptDeterministic.decrypt(
             testVector.output,
-            hexStringToBytes(testVector.key),
+            fromHex(testVector.key),
           ),
           testVector.ip,
         );

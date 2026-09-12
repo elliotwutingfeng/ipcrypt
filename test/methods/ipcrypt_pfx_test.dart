@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cipherlib/codecs.dart';
 import 'package:ipcrypt/ipcrypt.dart';
 import 'package:ipcrypt/src/methods/ipcrypt_pfx.dart';
 import 'package:test/test.dart';
@@ -17,7 +18,7 @@ void main() {
         expect(
           ipCryptPrefixPreserving.encrypt(
             testVector.ip,
-            hexStringToBytes(testVector.key),
+            fromHex(testVector.key),
           ),
           testVector.output,
         );
@@ -26,7 +27,7 @@ void main() {
         expect(
           ipCryptPrefixPreserving.decrypt(
             testVector.output,
-            hexStringToBytes(testVector.key),
+            fromHex(testVector.key),
           ),
           testVector.ip,
         );

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cipherlib/random.dart';
 import 'package:ipcrypt/src/core/kiasu_bc.dart';
 import 'package:ipcrypt/src/core/utils.dart';
 

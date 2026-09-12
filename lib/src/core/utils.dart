@@ -1,10 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:ipcrypt/src/core/random_bytes_stub.dart'
-    if (dart.library.io) 'package:ipcrypt/src/core/random_bytes_vm.dart'
-    if (dart.library.js_interop) 'package:ipcrypt/src/core/random_bytes_js.dart'
-    as rf;
-
 /// Convert an IP address string to its 16-byte representation.
 /// Handles both IPv4 and IPv6 addresses, with IPv4 being mapped to IPv6.
 Uint8List ipToBytes(String ip) {
@@ -88,54 +83,6 @@ String bytesToIp(Uint8List bytes) {
   return parts.join(':');
 }
 
-/// Generate cryptographically secure random bytes.
-Uint8List randomBytes(int length) {
-  if (length <= 0) {
-    throw RangeError('Number of bytes to generate must be positive.');
-  }
-  return rf.randomBytes(length);
-}
-
-/// XOR two byte arrays of equal length.
-Uint8List xorBytes(Uint8List a, Uint8List b) {
-  if (a.length != b.length) {
-    throw ArgumentError('Both byte arrays must have the same length.');
-  }
-  final Uint8List bytes = Uint8List(a.length);
-  for (int i = 0; i < a.length; i++) {
-    bytes[i] = a[i] ^ b[i];
-  }
-  return bytes;
-}
-
-/// Convert hex string to bytes in big-endian order.
-Uint8List hexStringToBytes(String hexString) {
-  if (hexString.length.isOdd) {
-    throw ArgumentError('Length of hex string must be even.');
-  }
-  final Uint8List result = Uint8List(hexString.length ~/ 2);
-  for (int i = 0; i < hexString.length; i += 2) {
-    for (int j = i; j < i + 2; j++) {
-      final int code = hexString.codeUnitAt(j);
-      if (!(code >= 48 && code <= 57) && // '0'-'9'
-          !(code >= 65 && code <= 70) && // 'A'-'F'
-          !(code >= 97 && code <= 102)) //  'a'-'f'
-      {
-        throw ArgumentError(
-          "Only characters ('0'-'9'), ('A'-'F'), and ('a'-'f')"
-          ' are allowed in hex string.',
-        );
-      }
-    }
-    result[i ~/ 2] = int.parse(hexString.substring(i, i + 2), radix: 16);
-  }
-  return result;
-}
-
-/// Convert bytes in big-endian order to hex string.
-String bytesToHexString(Uint8List bytes) =>
-    bytes.map((int byte) => byte.toRadixString(16).padLeft(2, '0')).join();
-
 /// Check if the IP address is IPv4 based on its byte length.
 /// IPv4 addresses are 4 bytes, IPv6 addresses are 16 bytes.
 bool isIPv4(Uint8List bytes16) {
@@ -205,18 +152,4 @@ Uint8List shiftLeftOneBit(Uint8List data) {
   }
 
   return result;
-}
-
-/// Check if 2 unsigned byte lists are equal
-/// by comparing them element-by-element.
-bool equalBytes(Uint8List a, Uint8List b) {
-  if (a.length != b.length) {
-    return false;
-  }
-  for (int i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) {
-      return false;
-    }
-  }
-  return true;
 }

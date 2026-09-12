@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cipherlib/codecs.dart';
 import 'package:ipcrypt/ipcrypt.dart';
 
 enum Method {
@@ -12,27 +13,27 @@ enum Method {
 void main() {
   final List<({Uint8List key, Uint8List tweak, Method method})> credentials = [
     (
-      key: hexStringToBytes('2b7e151628aed2a6abf7158809cf4f3c'),
-      tweak: hexStringToBytes(''),
+      key: fromHex('2b7e151628aed2a6abf7158809cf4f3c'),
+      tweak: fromHex(''),
       method: Method.deterministic,
     ),
     (
-      key: hexStringToBytes('2b7e151628aed2a6abf7158809cf4f3c'),
-      tweak: hexStringToBytes('b4ecbe30b70898d7'),
+      key: fromHex('2b7e151628aed2a6abf7158809cf4f3c'),
+      tweak: fromHex('b4ecbe30b70898d7'),
       method: Method.nonDeterministic,
     ),
     (
-      key: hexStringToBytes(
+      key: fromHex(
         '0123456789abcdeffedcba98765432101032547698badcfeefcdab8967452301',
       ),
-      tweak: hexStringToBytes('21bd1834bc088cd2b4ecbe30b70898d7'),
+      tweak: fromHex('21bd1834bc088cd2b4ecbe30b70898d7'),
       method: Method.extendedNonDeterministic,
     ),
     (
-      key: hexStringToBytes(
+      key: fromHex(
         '2b7e151628aed2a6abf7158809cf4f3ca9f5ba40db214c3798f2e1c23456789a',
       ),
-      tweak: hexStringToBytes(''),
+      tweak: fromHex(''),
       method: Method.prefixPreserving,
     ),
   ];
@@ -68,9 +69,9 @@ void main() {
         decryptedIp = ipCryptPrefixPreserving.decrypt(encryptedIp, c.key);
       }
       print('IP: $ip | IPCrypt Method: ${c.method.name}');
-      print('  Key (as hex string): ${bytesToHexString(c.key)}');
+      print('  Key (as hex string): ${toHex(c.key)}');
       if (![Method.deterministic, Method.prefixPreserving].contains(c.method)) {
-        print('Tweak (as hex string): ${bytesToHexString(c.tweak)}');
+        print('Tweak (as hex string): ${toHex(c.tweak)}');
       }
       print('         Encrypted IP: $encryptedIp');
       print('         Decrypted IP: $decryptedIp');

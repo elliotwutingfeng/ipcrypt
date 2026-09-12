@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cipherlib/codecs.dart';
 import 'package:ipcrypt/ipcrypt.dart';
 import 'package:ipcrypt/src/methods/ipcrypt_nd.dart';
 import 'package:test/test.dart';
@@ -18,7 +19,7 @@ void main() {
             ? expect(
                 () => bytesToIp(
                   ipCryptNonDeterministic
-                      .encrypt(testVector.ip, hexStringToBytes(testVector.key))
+                      .encrypt(testVector.ip, fromHex(testVector.key))
                       .sublist(IpCryptNonDeterministic.tweakSize),
                 ),
                 returnsNormally,
@@ -26,10 +27,10 @@ void main() {
             : expect(
                 ipCryptNonDeterministic.encrypt(
                   testVector.ip,
-                  hexStringToBytes(testVector.key),
-                  hexStringToBytes(testVector.tweak),
+                  fromHex(testVector.key),
+                  fromHex(testVector.tweak),
                 ),
-                hexStringToBytes(testVector.output),
+                fromHex(testVector.output),
               );
       });
       if (testVector.tweak.isEmpty) {
@@ -38,8 +39,8 @@ void main() {
       test('decrypt | ${testVector.output} -> ${testVector.ip}', () {
         expect(
           ipCryptNonDeterministic.decrypt(
-            hexStringToBytes(testVector.output),
-            hexStringToBytes(testVector.key),
+            fromHex(testVector.output),
+            fromHex(testVector.key),
           ),
           testVector.ip,
         );

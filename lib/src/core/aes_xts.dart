@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:ipcrypt/src/core/aes_ecb.dart';
-import 'package:ipcrypt/src/core/utils.dart';
-import 'package:ipcrypt/src/methods/ipcrypt_ndx.dart';
+import 'package:cipherlib/cipherlib.dart';
 
 /// Encrypt a single block using AES-XTS
 /// mode (XEX Tweakable Block Cipher with Ciphertext Stealing).
@@ -18,19 +16,11 @@ import 'package:ipcrypt/src/methods/ipcrypt_ndx.dart';
 /// 3. XOR plaintext with encrypted tweak.
 /// 4. Encrypt the result with AES using K1.
 /// 5. XOR the result with encrypted tweak again.
-Uint8List encryptBlockXts(Uint8List key, Uint8List tweak, Uint8List plaintext) {
-  final Uint8List k1 = key.sublist(
-    0,
-    IpCryptExtendedNonDeterministic.keySize ~/ 2,
-  );
-  final Uint8List k2 = key.sublist(
-    IpCryptExtendedNonDeterministic.keySize ~/ 2,
-  );
-  final Uint8List firstEncrypt = encryptBlockEcb(k2, tweak);
-  final Uint8List firstXor = xorBytes(plaintext, firstEncrypt);
-  final Uint8List secondEncrypt = encryptBlockEcb(k1, firstXor);
-  return xorBytes(secondEncrypt, firstEncrypt);
-}
+Uint8List encryptBlockXts(
+  Uint8List key,
+  Uint8List tweak,
+  Uint8List plaintext,
+) => AESInXTSMode(key, tweak).encrypt(plaintext);
 
 /// Decrypt a single block using AES-XTS mode.
 /// The decryption process is the inverse of encryption.
@@ -45,16 +35,4 @@ Uint8List decryptBlockXts(
   Uint8List key,
   Uint8List tweak,
   Uint8List ciphertext,
-) {
-  final Uint8List k1 = key.sublist(
-    0,
-    IpCryptExtendedNonDeterministic.keySize ~/ 2,
-  );
-  final Uint8List k2 = key.sublist(
-    IpCryptExtendedNonDeterministic.keySize ~/ 2,
-  );
-  final Uint8List firstEncrypt = encryptBlockEcb(k2, tweak);
-  final Uint8List firstXor = xorBytes(ciphertext, firstEncrypt);
-  final Uint8List firstDecrypt = decryptBlockEcb(k1, firstXor);
-  return xorBytes(firstDecrypt, firstEncrypt);
-}
+) => AESInXTSMode(key, tweak).decrypt(ciphertext);

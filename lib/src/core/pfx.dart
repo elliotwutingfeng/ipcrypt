@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:cipherlib/cipherlib.dart';
+import 'package:cipherlib/codecs.dart';
 import 'package:ipcrypt/src/core/aes_ecb.dart';
 import 'package:ipcrypt/src/core/utils.dart';
 import 'package:ipcrypt/src/methods/ipcrypt_pfx.dart';
@@ -19,7 +21,7 @@ String pfx(String ip, Uint8List key, bool encrypt) {
   final Uint8List k2 = key.sublist(IpCryptPrefixPreserving.keySize ~/ 2);
 
   // k1 and k2 must be different
-  if (equalBytes(k1, k2)) {
+  if (constantTimeEquals(k1, k2)) {
     throw ArgumentError('The two halves of the key must be different.');
   }
 
@@ -48,7 +50,7 @@ String pfx(String ip, Uint8List key, bool encrypt) {
     final Uint8List e2 = encryptBlockEcb(k2, paddedPrefix);
 
     // XOR the two encryptions
-    final Uint8List e = xorBytes(e1, e2);
+    final Uint8List e = xor(e1, e2);
 
     // We only need the least significant bit of byte 15
     final int cipherBit = e[15] & 1;
