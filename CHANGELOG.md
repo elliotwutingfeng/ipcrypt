@@ -1,3 +1,7 @@
+# v0.1.3
+
+- Use cipherlib.
+
 # v0.1.2
 
 - Add support for Node.js and WASM.
